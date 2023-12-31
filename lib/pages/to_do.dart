@@ -1,52 +1,65 @@
+// ignore_for_file: prefer_const_constructors, must_be_immutable
+
 import 'package:flutter/material.dart';
-import 'package:todo/pages/home_page.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ToDoTile extends StatefulWidget {
-  const ToDoTile({super.key});
 
-  @override
-  State<ToDoTile> createState() => _ToDoTileState();
-}
+class ToDoTile extends StatelessWidget {
+  final String taskName;
+  final bool taskCompleted;
+  Function(bool?)? onChanged;
+  Function(BuildContext)? deleteFunction;
 
-class _ToDoTileState extends State<ToDoTile> {
-// List
-  List toDoList = [
-    ["NaziyaTabassum", false],
-    ["Vikas", false],
-    ["chetan", false],
-    ["Jawad", true],
-    ["Do Something", false],
-  ];
-
-  void checkBoxChanged(bool? value, int index) {
-    setState(() {
-      toDoList[index][1] = !toDoList[index][1];
-    });
-  }
+  ToDoTile({
+    super.key,
+    required this.taskName,
+    required this.taskCompleted,
+    required this.onChanged,
+    required this.deleteFunction,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.yellow[200],
-      appBar: AppBar(
-        title: Center(child: Text("TODO")),
-        elevation: 0,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ListView.builder(
-          itemCount: toDoList.length,
-          itemBuilder: (context, index) {
-            return HomePage(
-              taskName: toDoList[index][0],
-              taskCompleted: toDoList[index][1],
-              onChanged: (value) => checkBoxChanged(value, index),
-            );
-          },
+    return Padding(
+      padding: const EdgeInsets.only(left: 25.0, right: 25, top: 25),
+      child: Slidable(
+        endActionPane: ActionPane(
+          motion: StretchMotion(),
+          children: [
+            SlidableAction(
+              onPressed: deleteFunction,
+              icon: Icons.delete,
+              backgroundColor: Colors.red.shade300,
+              borderRadius: BorderRadius.circular(12),
+            )
+          ],
+        ),
+        child: Container(
+          padding: EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.yellow,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              // checkbox
+              Checkbox(
+                value: taskCompleted,
+                onChanged: onChanged,
+                activeColor: Colors.black,
+              ),
+
+              // task name
+              Text(
+                taskName,
+                style: TextStyle(
+                  decoration: taskCompleted
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
